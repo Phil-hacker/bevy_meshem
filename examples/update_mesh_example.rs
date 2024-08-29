@@ -179,7 +179,7 @@ fn setup(
                 "X/Y/Z: Rotate\nR: Reset orientation\nMove Camera: W/A/S/D/Left-Shift/Space\nToggle Wireframe: T\n"),
             TextStyle {
                 font_size: 26.0,
-                color: Color::LIME_GREEN,
+                color: bevy::color::palettes::css::LIMEGREEN.into(),
                 ..default()
             },
         )
@@ -196,7 +196,7 @@ fn setup(
             format!("Press -C- To Break / Add a random voxel\n",),
             TextStyle {
                 font_size: 26.0,
-                color: Color::LIME_GREEN,
+                color: bevy::color::palettes::css::LIMEGREEN.into(),
                 ..default()
             },
         )
@@ -308,12 +308,12 @@ fn toggle_wireframe(
         if let Ok(ent) = with.get_single() {
             commands.entity(ent).remove::<Wireframe>();
             for (_, material) in materials.iter_mut() {
-                material.base_color.set_a(1.0);
+                material.base_color.set_alpha(1.0);
             }
         } else if let Ok(ent) = without.get_single() {
             commands.entity(ent).insert(Wireframe);
             for (_, material) in materials.iter_mut() {
-                material.base_color.set_a(0.0);
+                material.base_color.set_alpha(0.0);
             }
         }
     }
@@ -364,7 +364,7 @@ fn mesh_update(
     mesh_query: Query<&Handle<Mesh>>,
     mut event_reader: EventReader<RegenerateMesh>,
 ) {
-    for _ in event_reader.read() {
+    if let Some(_) = event_reader.read().next() {
         let mesh = meshes
             .get_mut(mesh_query.get_single().unwrap())
             .expect("Couldn't get a mut ref to the mesh");
@@ -395,6 +395,5 @@ fn mesh_update(
             }
             _ => {}
         }
-        break;
     }
 }

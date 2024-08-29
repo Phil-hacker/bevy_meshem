@@ -86,7 +86,7 @@ fn setup(
         PbrBundle {
             mesh: culled_mesh_handle,
             material: materials.add(StandardMaterial {
-                base_color: Color::SALMON,
+                base_color: bevy::color::palettes::css::SALMON.into(),
                 alpha_mode: AlphaMode::Mask(0.5),
                 ..default()
             }),
@@ -139,7 +139,7 @@ fn setup(
                 "X/Y/Z: Rotate\nR: Reset orientation\nMove Camera: W/A/S/D/Left-Shift/Space\nToggle Wireframe: T\n"),
             TextStyle {
                 font_size: 26.0,
-                color: Color::LIME_GREEN,
+                color: bevy::color::palettes::css::LIMEGREEN.into(),
                 ..default()
             },
         )
@@ -157,7 +157,7 @@ fn setup(
                 MESHING_ALGORITHM,),
             TextStyle {
                 font_size: 26.0,
-                color: Color::LIME_GREEN,
+                color: bevy::color::palettes::css::LIMEGREEN.into(),
                 ..default()
             },
         )
@@ -262,12 +262,12 @@ fn toggle_wireframe(
         if let Ok(ent) = with.get_single() {
             commands.entity(ent).remove::<Wireframe>();
             for (_, material) in materials.iter_mut() {
-                material.base_color.set_a(1.0);
+                material.base_color.set_alpha(1.0);
             }
         } else if let Ok(ent) = without.get_single() {
             commands.entity(ent).insert(Wireframe);
             for (_, material) in materials.iter_mut() {
-                material.base_color.set_a(0.0);
+                material.base_color.set_alpha(0.0);
             }
         }
     }
@@ -319,7 +319,7 @@ fn regenerate_mesh(
     mut event_reader: EventReader<RegenerateMesh>,
     mut text_query: Query<&mut Text, With<MeshInfo>>,
 ) {
-    for _ in event_reader.read() {
+    if let Some(_) = event_reader.read().next() {
         let mesh = meshes
             .get_mut(mesh_query.get_single().unwrap())
             .expect("Couldn't get a mut ref to the mesh");
@@ -344,6 +344,5 @@ fn regenerate_mesh(
         .unwrap();
 
         t.sections[0].value = format!("Press -C- To regenerate the mesh with a different Algorithm\nVertices Count: {}\nMeshing Algorithm: {:?}",mesh.count_vertices(),m.ma);
-        return;
     }
 }
